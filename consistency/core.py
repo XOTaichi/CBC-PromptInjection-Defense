@@ -590,3 +590,98 @@ Requirements:
         raise RuntimeError(
             "No instruction was generated within the given rounds."
         )
+
+
+class SimpleLLMConsistencyChecker:
+    """
+    A simplified consistency checker that directly uses LLM to judge
+    the four conflict types without separate parsing step.
+
+    Four conflict types checked:
+    1. action_domain: Instruction A's action vs Instruction B's domain
+    2. action_constraint: Instruction A's action vs Instruction B's constraints
+    3. domain_domain: Instruction A's domain vs Instruction B's domain
+    4. constraint_constraint: Instruction A's constraints vs Instruction B's constraints
+    """
+
+    def __init__(self, backend: LLMBackend, temperature: float = 0.0) -> None:
+        self.backend = backend
+        self.temperature = temperature
+
+    def _build_system_prompt(self) -> str:
+        return (
+            "You are an instruction consistency judge. "
+            "Your task is to analyze two instructions and check for conflicts across four dimensions. "
+            "Only output JSON, do not output explanations outside the JSON."
+        )
+
+    def _build_user_prompt(self, instruction_a: str, instruction_b: str) -> str:
+        return f"""
+Please analyze the following two instructions and check for conflicts across four dimensions.
+
+Four dimensions to check (each dimension outputs 0 for NO CONFLICT, 1 for CONFLICT):
+1. action_domain_conflict: Check if Instruction A's action conflicts with Instruction B's domain/role/context
+2. action_constraint_conflict: Check if Instruction A's action conflicts with Instruction B's constraints/restrictions
+3. domain_domain_conflict: Check if Instruction A's domain conflicts with Instruction B's domain
+4. constraint_constraint_conflict: Check if Instruction A's constraints conflict with Instruction B's constraints
+
+CONFLICT RULES:
+- 0 = NO CONFLICT: Compatible, same, inclusive, supplementary, or can both be satisfied
+- 1 = CONFLICT: Opposite, mutually exclusive, or cannot both be satisfied
+
+Instruction A:
+\"\"\"{instruction_a}\"\"\"
+
+Instruction B:
+\"\"\"{instruction_b}\"\"\"
+
+Output JSON format:
+{{
+    "action_domain_conflict": 0 or 1,
+    "action_constraint_conflict": 0 or 1,
+    "domain_domain_conflict": 0 or 1,
+    "constraint_constraint_conflict": 0 or 1,
+    "explanations": {{
+        "action_domain": "brief reason for this dimension",
+        "action_constraint": "brief reason for this dimension",
+        "domain_domain": "brief reason for this dimension",
+        "constraint_constraint": "brief reason for this dimension"
+    }}
+}}
+
+Only output the JSON object.
+""".strip()
+
+    def check_consistency(self, instruction_a: str, instruction_b: str) -> ConflictResult:
+        """
+        Check consistency between two instructions using direct LLM judgment.
+
+        Returns:
+            ConflictResult with conflict codes (0 = no conflict, 1 = conflict) for each dimension
+        """
+        system_prompt = self._build_system_prompt()
+        user_prompt = self._build_user_prompt(instruction_a, instruction_b)
+
+        raw = self.backend.chat(system_prompt, user_prompt, temperature=self.temperature)
+        data = _safe_json_loads(raw)
+
+        return ConflictResult(
+            action_domain_conflict=int(data.get("action_domain_conflict", 0)),
+            action_constraint_conflict=int(data.get("action_constraint_conflict", 0)),
+            domain_domain_conflict=int(data.get("domain_domain_conflict", 0)),
+            constraint_constraint_conflict=int(data.get("constraint_constraint_conflict", 0)),
+            explanations=data.get("explanations", {})
+        )
+
+    def check_consistency_dict(self, instruction_a: str, instruction_b: str) -> Dict[str, Any]:
+        """
+        Check consistency and return a dictionary with all results.
+        """
+        result = self.check_consistency(instruction_a, instruction_b)
+        return {
+            "instruction_a": instruction_a,
+            "instruction_b": instruction_b,
+            "judge_tuple": result.as_tuple(),
+            "consistent": result.consistent,
+            "explanations": result.explanations,
+        }

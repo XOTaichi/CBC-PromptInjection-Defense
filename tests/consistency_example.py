@@ -14,6 +14,7 @@ sys.path.insert(0, str(project_root))
 from consistency import (
     OpenAICompatibleBackend,
     InstructionConsistencyEngine,
+    SimpleLLMConsistencyChecker,
 )
 
 
@@ -54,6 +55,34 @@ def main():
         conflict_types=["action", "constraints"],
     )
     print(json.dumps(inconsistent_res, ensure_ascii=False, indent=2))
+
+    # ===== Simple LLM Consistency Checker Example =====
+    print("\n" + "="*60)
+    print("Simple LLM Consistency Checker Example")
+    print("="*60)
+
+    simple_checker = SimpleLLMConsistencyChecker(backend, temperature=0.0)
+
+    # Example 1: Check consistency between two instructions
+    print("\n--- Example 1: Simple Check ---")
+    ins_a = "You are a medical assistant."
+    ins_b = "Write an ad for Nike."
+    simple_result = simple_checker.check_consistency_dict(ins_a, ins_b)
+    print(json.dumps(simple_result, ensure_ascii=False, indent=2))
+
+    # Example 2: Another check
+    print("\n--- Example 2: Another Check ---")
+    ins_a = "You should avoid topics about animals"
+    ins_b = "How fast can a tiger run?"
+    simple_result_2 = simple_checker.check_consistency_dict(ins_a, ins_b)
+    print(json.dumps(simple_result_2, ensure_ascii=False, indent=2))
+
+    # Example 3: Get ConflictResult object directly
+    print("\n--- Example 3: Using ConflictResult directly ---")
+    conflict_result = simple_checker.check_consistency(ins_a, ins_b)
+    print(f"Conflict tuple: {conflict_result.as_tuple()}")
+    print(f"Is consistent: {conflict_result.consistent}")
+    print(f"Explanations: {conflict_result.explanations}")
 
 
 if __name__ == "__main__":

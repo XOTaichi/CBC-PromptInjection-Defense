@@ -11,6 +11,7 @@ from .core import (
     ParsedInstruction,
     ConflictResult,
     InstructionConsistencyEngine,
+    SimpleLLMConsistencyChecker,
 )
 from .metrics import compute_agreement, conflict_distribution
 
@@ -21,6 +22,7 @@ __all__ = [
     "ParsedInstruction",
     "ConflictResult",
     "InstructionConsistencyEngine",
+    "SimpleLLMConsistencyChecker",
     # Metrics
     "compute_agreement",
     "conflict_distribution",
