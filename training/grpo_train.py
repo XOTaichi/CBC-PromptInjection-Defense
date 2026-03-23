@@ -206,7 +206,7 @@ def main():
     # Run VERL command
     print("Starting VERL training...")
     try:
-        result = subprocess.run(cmd, check=True, cwd=str(Path(__file__).parent.parent))
+        subprocess.run(cmd, check=True, cwd=str(Path(__file__).parent.parent))
         print("Training completed successfully!")
     except subprocess.CalledProcessError as e:
         print(f"Training failed with error code: {e.returncode}")
