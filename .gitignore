@@ -208,3 +208,8 @@ __marimo__/
 
 # Raw data directory
 raw/
+
+# evaluation directory
+eval/
+
+temp.py
