@@ -233,10 +233,10 @@ if __name__ == "__main__":
     parser.add_argument("--start_batch", type=int, default=0, help="Start from batch number (default 0)")
     parser.add_argument("--end_batch", type=int, default=None, help="End at batch number (default None)")
     parser.add_argument("--batch_size", type=int, default=5, help="Size of each batch (default 5)")
-    parser.add_argument("--output_file", type=str, default='sft_dataset/raw/GLM_domain_conflict.json', help="Output file path (default 'sft_dataset/raw/GLM_domain_conflict.json')")
+    parser.add_argument("--output_file", type=str, default='dataset/GLM_domain_conflict.json', help="Output file path (default 'dataset/GLM_domain_conflict.json')")
     args = parser.parse_args()
 
-    with open('sft_dataset/raw/domain_conflict.json', 'r') as input_file:
+    with open('dataset/domain_conflict.json', 'r') as input_file:
         data = json.load(input_file)
 
     process_and_save_batch(args.model_name, data, start_batch=args.start_batch, end_batch=args.end_batch, batch_size=args.batch_size, output_file=args.output_file)
