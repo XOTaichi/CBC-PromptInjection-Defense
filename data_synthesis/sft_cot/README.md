@@ -12,12 +12,6 @@ Three data synthesis scripts are provided for different conflict types:
 
 ## Setup
 
-### Install Dependencies
-
-```bash
-pip install openai
-```
-
 ### Configure API
 
 Update the OpenAI client configuration in each script:

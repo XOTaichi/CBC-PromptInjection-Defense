@@ -56,11 +56,22 @@ python training/rm_server.py
 
 
 
-## SFT Dataset Construction
+## Dataset Construction
 
-The scripts under `data_synthesis/` are used to construct CoT supervision data for different conflict categories.
+The scripts under `data_synthesis/sft_cot` are used to construct CoT supervision data for different conflict categories.
 
 Before running them, you need to prepare the consistency / inconsistency data generated from the task consistency framework.
+
+Example usage:
+
+```bash
+python data_synthesis/sft_cot/domain_conflict.py \
+    --model_name GLM-4.6 \
+    --input_file sft_dataset/raw/domain_conflict.json \
+    --output_file sft_dataset/raw/GLM_domain_conflict.json
+```
+
+See `data_synthesis/sft_cot/README.md` for more details.
 
 ## Released Resources
 
