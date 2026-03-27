@@ -28,8 +28,23 @@ See `training/chat_template_example/` for reference examples.
 Run:
 
 ```bash
-python training/sft.py
+python training/sft.py \
+  --model_path models/Llama-3.1-8B-Instruct \
+  --tokenizer_path models/Llama-3.1-8B-Instruct \
+  --train_data dataset/sft/cot/output_v6.json \
+  --output_dir models/sft_llama_v1 \
+  --max_length_filter 2500 \
+  --max_tokens 2500
 ```
+
+**Arguments:**
+- `--model_path`: Path to the base model
+- `--tokenizer_path`: Path to the tokenizer (with updated chat template)
+- `--train_data`: Path to the SFT training dataset in JSON format
+- `--test_ratio`: Train/eval split ratio (default: 0.05)
+- `--output_dir`: Directory to save the fine-tuned model
+- `--max_length_filter`: Maximum token length for filtering training samples
+- `--max_tokens`: Maximum sequence length for training
 
 ### 3. GRPO training
 
