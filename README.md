@@ -30,8 +30,8 @@ Run:
 ```bash
 python training/sft.py \
   --model_path models/Llama-3.1-8B-Instruct \
-  --tokenizer_path models/Llama-3.1-8B-Instruct \
-  --train_data dataset/sft/cot/output_v6.json \
+  --tokenizer_path models/Llama-3.1-new \
+  --train_data dataset/sft/cot.json \
   --output_dir models/sft_llama_v1 \
   --max_length_filter 2500 \
   --max_tokens 2500
