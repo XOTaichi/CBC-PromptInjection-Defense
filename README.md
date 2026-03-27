@@ -48,13 +48,34 @@ python training/sft.py \
 
 ### 3. GRPO training
 
-First start the reward model server:
+First, configure the reward model path in `training/rm_server.py`:
+
+```python
+MODEL_PATH = "./models/ultrarm-13b"  # Update this to your reward model path
+```
+
+Then start the reward model server:
 
 ```bash
 python training/rm_server.py
 ```
 
+Finally, run GRPO training by configuring and executing the script:
 
+```bash
+# Edit grpo.sh to configure paths and hyperparameters, then run:
+chmod +x training/grpo.sh
+./training/grpo.sh
+```
+
+**Key configuration in `grpo.sh`:**
+- `OUTPUTS_DIR`: Directory to save trained model
+- `MODEL_PATH`: Path to the SFT fine-tuned model
+- `TRAIN_DATA` / `EVAL_DATA`: Paths to GRPO datasets (parquet format)
+- `CUSTOM_REWARD_FUNCTION`: Path to reward function
+- Training hyperparameters: batch size, learning rate, epochs, etc.
+
+See `training/README.md` for more details.
 
 ## Dataset Construction
 
